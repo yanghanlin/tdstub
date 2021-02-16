@@ -261,3 +261,7 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+
+### Project specific ###
+# Instance-local files
+instance-local/
