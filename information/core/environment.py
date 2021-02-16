@@ -56,7 +56,7 @@ def _current_network() -> dict:
         if adapter.name != adapter.nice_name:
             entry['name'] = adapter.nice_name
         entry['ips'] = [str(ip.ip) for ip in adapter.ips]
-        interfaces[adapter.name.decode()] = entry
+        interfaces[adapter.name.decode() if type(adapter.name) == bytes else adapter.name] = entry
     return {
         'hostname': socket.gethostname(),
         'interfaces': interfaces,
