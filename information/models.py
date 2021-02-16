@@ -1,12 +1,19 @@
 from django.db import models
+from .core.entity import Entity
 
 
-class Instance(models.Model):
+class Instance(models.Model, Entity):
     uid = models.CharField('Unique identifier', max_length=255, editable=False, unique=True)
     description = models.CharField(max_length=255)
 
     def __str__(self):
         return self.uid
+
+    def data(self):
+        return {
+            'uid': self.uid,
+            'description': self.description,
+        }
 
 
 class EventTag(models.Model):

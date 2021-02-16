@@ -35,7 +35,7 @@ def current_instance() -> Instance:
         return instance
 
 
-def record_event(description: str, tags: Union[str, Iterable] = (), *, instance: Instance = None):
+def record_event(description: str, tags: Union[str, Iterable] = (), *, instance: Instance = None) -> Event:
     if instance is None:
         instance = current_instance()
     if isinstance(tags, str):
