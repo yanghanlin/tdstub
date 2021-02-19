@@ -22,15 +22,20 @@ jobs:
         run: |
           chmod -R u+x scripts/
           scripts/config.py get
+
+          echo "Extracting information from configuration"
           export GIT_COMMIT=$(scripts/config.py get git.commit)
           export GIT_REF=$(scripts/config.py get git.ref)
           export IMAGE=$(scripts/config.py get deploy.image)
           export CHANNEL=$(scripts/config.py get deploy.channel)
+          export SERVICE_PORT=$(scripts/config.py get deploy.service-port)
           export MANIFESTS=$(scripts/config.py get deploy.manifests)
           echo "MANIFESTS=${MANIFESTS}" >> ${GITHUB_ENV}
+
+          echo "Generating manifests based on configuration"
           while IFS= read -r manifest; do
             echo "Substituting $manifest"
-            envsubst < $manifest > $manifest
+            echo "$(envsubst < $manifest)" >$manifest
             cat $manifest
           done <<< "$MANIFESTS"
       - name: Deploy manifests
