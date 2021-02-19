@@ -42,10 +42,9 @@ jobs:
           docker push "${IMAGE_ID}:${GITHUB_SHA}"
       - name: Set deployment configuration
         run: |
-          CONFIG=python3 scripts/config.py
-          $CONFIG set deploy.image "${IMAGE_ID}:${GITHUB_SHA}"
-          $CONFIG set deploy.channel "${CI_REF_NAME_SLUG}"
-          $CONFIG set deploy.manifests kustomization/resources.yml
+          scripts/config.py set deploy.image "${IMAGE_ID}:${GITHUB_SHA}"
+          scripts/config.py set deploy.channel "${CI_REF_NAME_SLUG}"
+          scripts/config.py set deploy.manifests kustomization/resources.yml
       - name: Upload deployment configuration
         uses: actions/upload-artifact@v2
         with:
