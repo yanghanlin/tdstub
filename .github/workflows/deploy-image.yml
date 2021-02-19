@@ -18,6 +18,22 @@ jobs:
           method: service-account
           k8s-url: https://k8s-api.services.infra.tree-diagram.site:6443
           k8s-secret: ${{ secrets.K8S_SERVICE_ACCOUNT_SECRET }}
-      - name: Test
+      - name: Process deployment configuration
         run: |
-          python3 scripts/config.py get
+          chmod -R u+x scripts/
+          scripts/config.py get
+          export GIT_COMMIT=$(scripts/config.py get git.commit)
+          export GIT_REF=$(scripts/config.py get git.ref)
+          export IMAGE=$(scripts/config.py get deploy.image)
+          export CHANNEL=$(scripts/config.py get deploy.channel)
+          export MANIFESTS=$(scripts/config.py get deploy.manifests)
+          echo "MANIFESTS=${MANIFESTS}" >> ${GITHUB_ENV}
+          while IFS= read -r manifest; do
+            echo "Substituting $manifest"
+            envsubst < $manifest > $manifest
+            cat $manifest
+          done <<< "$MANIFESTS"
+      - name: Deploy manifests
+        uses: Azure/k8s-deploy@v1.3
+        with:
+          manifests: ${{ env.MANIFESTS }}
