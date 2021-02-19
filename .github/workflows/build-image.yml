@@ -40,3 +40,17 @@ jobs:
           docker tag "${IMAGE_ID}:latest" "${IMAGE_ID}:${GITHUB_SHA}"
           docker push "${IMAGE_ID}:${CI_REF_NAME_SLUG}"
           docker push "${IMAGE_ID}:${GITHUB_SHA}"
+      - name: Set deployment configuration
+        run: |
+          CONFIG=python3 scripts/config.py
+          $CONFIG set deploy.image "${IMAGE_ID}:${GITHUB_SHA}"
+          $CONFIG set deploy.channel "${CI_REF_NAME_SLUG}"
+          $CONFIG set deploy.manifests kustomization/resources.yml
+      - name: Upload deployment configuration
+        uses: actions/upload-artifact@v2
+        with:
+          name: deployment-configuration
+          path: |
+            config.json
+            scripts/
+            kustomization/

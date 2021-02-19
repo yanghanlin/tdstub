@@ -265,3 +265,6 @@ tags
 ### Project specific ###
 # Instance-local files
 instance-local/
+
+# Configuration to trasmit data between workflows
+config.json

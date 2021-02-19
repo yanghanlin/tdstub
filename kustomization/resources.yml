@@ -1,0 +1,61 @@
+# Definition of Kubernetes resources
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: stub
+  labels:
+    app: stub
+spec:
+  type: LoadBalancer
+  selector:
+    app: stub
+  ports:
+    - protocol: TCP
+      port: 18000
+      targetPort: 8000
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stub
+  labels:
+    app: stub
+data:
+  SOME_ENVIRONMENT_VARIABLE: hello world
+  some_env_var: some var
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stub
+  labels:
+    app: stub
+spec:
+  replicas: 8
+  selector:
+    matchLabels:
+      app: stub
+  template:
+    metadata:
+      labels:
+        app: stub
+    spec:
+      containers:
+        - name: stub
+          image: docker.io/hanlinyang/tdstub:latest
+          env:
+            - name: CONFIG_SOME_ENVIRONMENT_VARIABLE
+              valueFrom:
+                configMapKeyRef:
+                  name: stub
+                  key: SOME_ENVIRONMENT_VARIABLE
+            - name: some-env-var
+              valueFrom:
+                configMapKeyRef:
+                  name: stub
+                  key: some_env_var
