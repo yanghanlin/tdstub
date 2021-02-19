@@ -7,16 +7,17 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v2
+      - name: Retrive deployment configuration
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build-image.yml
+          name: deployment-configuration
       - name: Set up Kubernetes context
         uses: azure/k8s-set-context@v1
         with:
           method: service-account
           k8s-url: https://k8s-api.services.infra.tree-diagram.site:6443
           k8s-secret: ${{ secrets.K8S_SERVICE_ACCOUNT_SECRET }}
-      - name: Try out kubectl configuration
+      - name: Test
         run: |
-          kubectl cluster-info
-          kubectl get nodes -o wide
-          kubectl get pods -o wide
+          python3 scripts/config.py get

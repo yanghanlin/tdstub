@@ -1,18 +1,26 @@
 # Definition of Kubernetes resources
+# Requires substitution of following variables:
+#   CHANNEL:      channel of deployed app (main, staging, etc.)
+#   SERVICE_PORT: port the load balancer service exposes
+#   IMAGE:        image to deploy to cluster
+#   GIT_COMMIT:   commit from which deployed code is checked out
+#   GIT_REF:      ref (branch or tag) which points to the commit
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: stub
+  name: stub-${CHANNEL}
   labels:
     app: stub
+    channel: ${CHANNEL}
 spec:
   type: LoadBalancer
   selector:
     app: stub
+    channel: ${CHANNEL}
   ports:
     - protocol: TCP
-      port: 18000
+      port: ${SERVICE_PORT}
       targetPort: 8000
 
 ---
@@ -20,42 +28,58 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: stub
+  name: stub-${CHANNEL}
   labels:
     app: stub
+    channel: ${CHANNEL}
 data:
-  SOME_ENVIRONMENT_VARIABLE: hello world
-  some_env_var: some var
+  appName: stub
+  currentChannel: ${CHANNEL}
+  currentGitCommit: ${GIT_COMMIT}
+  currengGitRef: ${GIT_REF}
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: stub
+  name: stub-${CHANNEL}
   labels:
     app: stub
+    channel: ${CHANNEL}
 spec:
-  replicas: 8
+  replicas: 4
   selector:
     matchLabels:
       app: stub
+      channel: ${CHANNEL}
   template:
     metadata:
       labels:
         app: stub
+        channel: ${CHANNEL}
     spec:
       containers:
         - name: stub
-          image: docker.io/hanlinyang/tdstub:latest
+          image: ${IMAGE}
           env:
-            - name: CONFIG_SOME_ENVIRONMENT_VARIABLE
+            - name: APP_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: stub
-                  key: SOME_ENVIRONMENT_VARIABLE
-            - name: some-env-var
+                  name: stub-${CHANNEL}
+                  key: appName
+            - name: CURRENT_CHANNEL
               valueFrom:
                 configMapKeyRef:
-                  name: stub
-                  key: some_env_var
+                  name: stub-${CHANNEL}
+                  key: currentChannel
+            - name: CURRENT_GIT_COMMIT
+                valueFrom:
+                  configMapKeyRef:
+                    name: stub-${CHANNEL}
+                    key: currentGitCommit
+            - name: CURRENT_GIT_REF
+                valueFrom:
+                  configMapKeyRef:
+                    name: stub-${CHANNEL}
+                    key: currentGitRef
