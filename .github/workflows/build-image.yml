@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - staging
   workflow_dispatch:
 
 env:
@@ -45,12 +46,13 @@ jobs:
           scripts/config.py set git.commit "${GITHUB_SHA}"
           scripts/config.py set git.ref "${CI_REF_NAME}"
           scripts/config.py set deploy.image "${IMAGE_ID}:${GITHUB_SHA}"
-          scripts/config.py set deploy.channel "${CI_REF_NAME_SLUG}"
           scripts/config.py set deploy.manifests kustomization/resources.yml
           if [[ "${CI_REF_NAME}" == "main" ]]; then
             scripts/config.py set deploy.service-port 18000
+            scripts/config.py set deploy.channel stable
           else
             scripts/config.py set deploy.service-port 18001
+            scripts/config.py set deploy.channel unstable
           fi
       - name: Upload deployment configuration
         uses: actions/upload-artifact@v2
