@@ -74,12 +74,12 @@ spec:
                   name: stub-${CHANNEL}
                   key: currentChannel
             - name: CURRENT_GIT_COMMIT
-                valueFrom:
-                  configMapKeyRef:
-                    name: stub-${CHANNEL}
-                    key: currentGitCommit
+              valueFrom:
+                configMapKeyRef:
+                  name: stub-${CHANNEL}
+                  key: currentGitCommit
             - name: CURRENT_GIT_REF
-                valueFrom:
-                  configMapKeyRef:
-                    name: stub-${CHANNEL}
-                    key: currentGitRef
+              valueFrom:
+                configMapKeyRef:
+                  name: stub-${CHANNEL}
+                  key: currentGitRef
