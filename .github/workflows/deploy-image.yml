@@ -26,7 +26,10 @@ jobs:
       - name: Process deployment configuration
         run: |
           chmod -R u+x scripts/
+
+          echo "::group::Deployment configuration"
           scripts/config.py get
+          echo "::endgroup::"
 
           echo "::group::Extracting information from configuration"
           export GIT_COMMIT=$(scripts/config.py get git.commit)
@@ -36,12 +39,14 @@ jobs:
           export SERVICE_PORT=$(scripts/config.py get deploy.service-port)
           export MANIFESTS=$(scripts/config.py get deploy.manifests)
           echo "MANIFESTS=${MANIFESTS}" >> ${GITHUB_ENV}
+          echo "::endgroup::"
 
           echo "::group::Processing manifests based on configuration"
           while IFS= read -r manifest; do
             echo "Processing $manifest"
             echo "$(envsubst < $manifest)" >$manifest
           done <<< "$MANIFESTS"
+          echo "::endgroup::"
       - name: Deploy manifests
         uses: Azure/k8s-deploy@v1.3
         with:
