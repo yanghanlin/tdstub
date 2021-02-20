@@ -14,6 +14,8 @@ An API server to reveal system information and runtime environment, as well as t
 
 **Query parameters:** Any
 
+**Request body:** Any
+
 ### Response
 
 **Status code:** `200 OK`, while it is possible to control the status code by providing a special query parameter `status` with value of expected status code
