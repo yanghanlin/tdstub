@@ -1,6 +1,11 @@
 name: Deploy to cluster
 
 on:
+  workflow_run:
+    workflows:
+      - Build container image
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
@@ -23,7 +28,7 @@ jobs:
           chmod -R u+x scripts/
           scripts/config.py get
 
-          echo "Extracting information from configuration"
+          echo "::group::Extracting information from configuration"
           export GIT_COMMIT=$(scripts/config.py get git.commit)
           export GIT_REF=$(scripts/config.py get git.ref)
           export IMAGE=$(scripts/config.py get deploy.image)
@@ -32,11 +37,10 @@ jobs:
           export MANIFESTS=$(scripts/config.py get deploy.manifests)
           echo "MANIFESTS=${MANIFESTS}" >> ${GITHUB_ENV}
 
-          echo "Generating manifests based on configuration"
+          echo "::group::Processing manifests based on configuration"
           while IFS= read -r manifest; do
-            echo "Substituting $manifest"
+            echo "Processing $manifest"
             echo "$(envsubst < $manifest)" >$manifest
-            cat $manifest
           done <<< "$MANIFESTS"
       - name: Deploy manifests
         uses: Azure/k8s-deploy@v1.3
