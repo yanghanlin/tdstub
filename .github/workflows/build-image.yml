@@ -5,6 +5,11 @@ on:
     branches:
       - main
       - staging
+    paths-ignore:
+      - '.git**'
+      - '!.github/workflows/**'
+      - '**/README.md'
+      - '**/LICENSE'
   workflow_dispatch:
 
 env:
